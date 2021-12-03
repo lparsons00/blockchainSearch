@@ -28,6 +28,7 @@ contract SearchAddress {
 
     function setSearchAddress(string memory _searchaddress) public {
         console.log("Changing search address from '%s' to '%s'", searchaddress, _searchaddress);
+		returnInfo = _searchaddress;
         searchaddress = _searchaddress;
     }
 	
@@ -42,12 +43,16 @@ contract SearchAddress {
     }
 	
 	function getAccountTransactions(string memory searchaddress, int startBlockNumber, int endBlockNumber) public returns (string memory) {
-		//uint i = startBlockNumber;
-		returnInfo = "";
-		/*for (; i <= endBlockNumber; i++) {
-			Object block = eth.getBlock(i, true);
-			block.transactions.forEach( function(e) {
-				if (searchaddress == "*" || searchaddress == e.from || searchaddress == e.to) {
+
+		uint i = startBlockNumber;
+		for (; i <= endBlockNumber; i++) {
+			Block storage block = eth.getBlock(i, true);
+			
+			for( unit j = 0; j < block.transactions.Count(); j++){
+				if(block.transactions[j].from == searchAddress 
+				||
+				block.transactions[j].to == searchAddress )
+				{
 					returnInfo = "tx hash : " + e.hash + "\n" +
 					"nonce : " + e.nonce + "\n" +
 					"blockHash : " + e.blockHash + "\n"
@@ -61,8 +66,27 @@ contract SearchAddress {
 					"input : " + e.input;
 					break;
 				}
-			})
-		}*/
+			}
+			
+			/**block.transactions.forEach( function(e) {
+				if (searchaddress == e.from || searchaddress == e.to) {
+					returnInfo = "tx hash : " + e.hash + "\n" +
+					"nonce : " + e.nonce + "\n" +
+					"blockHash : " + e.blockHash + "\n"
+					"blockNumber : " + e.blockNumber + "\n"
+					"transactionIndex : " + e.transactionIndex + "\n"
+					"from : " + e.from + "\n" 
+					"to : " + e.to + "\n"
+					"value : " + e.value + "\n"
+					"gasPrice : " + e.gasPrice + "\n"
+					"gas : " + e.gas + "\n"
+					"input : " + e.input;
+					break;
+				}
+			})*/
+			
+			
+		}
 		return returnInfo;
 	}
 }

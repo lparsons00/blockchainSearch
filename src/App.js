@@ -5,9 +5,8 @@ import SearchAddress from './artifacts/contracts/SearchAddress.sol/SearchAddress
 import React from "react";
 
 // Update with the contract address logged out to the CLI when it was deployed 
-//const SearchAddressContractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
-const SearchAddressContractAddress = "0x999CB54E01d25450292857f298c57269E7E54379";
+const SearchAddressContractAddress = "0xf6b34392C330139B965f5D152a3218B02D037a61";
 function App() {
 	const [address, setSearchAddressValue] = useState()
 	const [firstblock, setFirstBlockValue] = useState()
@@ -25,10 +24,13 @@ function App() {
 	const[searchBlockLast, setsearchBlockLastLocal] = useState("")
 	const handleFetchLastBlock = () => setsearchBlockLastLocal(temp);
 	
+	const[searchResults, searchResultsLocal] = useState("")
+	const handleSearchResults = () => searchResultsLocal(temp);
+	
 	var temp = ""
 	
 	//var searchAddressLocal = ""
-	var searchResultsLocal = ""
+	//var searchResultsLocal = ""
 	//var searchBlockStart = ""
 	//var searchBlockEnd = ""
 	
@@ -94,6 +96,7 @@ function App() {
 	}
 
 	async function setSearchAddress() {
+		
 		if (!address) return
 		if (typeof window.ethereum !== 'undefined') {
 			await requestAccount()
@@ -133,25 +136,27 @@ function App() {
 	}
   
 	
-	
 	//actually process the search
 	async function processSearch() {
-		if (!address) return
 		if (typeof window.ethereum !== 'undefined') {
-			//for now just hardcode blocks
-			let startBlock = 11535833
-			let endBlock = startBlock - 100
+			let startBlock = parseInt(searchBlockStart)
+			let endBlock = parseInt(searchBlockLast)
 			await requestAccount()
 			const provider = new ethers.providers.Web3Provider(window.ethereum);
 			const signer = provider.getSigner()
 			const contract = new ethers.Contract(SearchAddressContractAddress, SearchAddress.abi, signer)
-			const transaction = await contract.getAccountTransactions(address, startBlock, endBlock)
-			await transaction.wait()
+			//const transaction = await contract.getAccountTransactions(address, startBlock, endBlock)
+			//await transaction.wait()
 			//fetchSearchAddress()
 			
 			try {
-				const data = await contract.getAccountTransactions(address, startBlock, endBlock)
+				const data = await contract.getAccountTransactions(searchAddressLocal, startBlock, endBlock)
 				console.log('data: ', data)
+				temp = data.hash
+				handleSearchResults();
+				
+				console.log('searchResults: ', searchResults);
+				
 				
 				
 			} catch (err) {
@@ -188,7 +193,7 @@ function App() {
 				
 				
 				
-				<div> Search Results: {searchResultsLocal} </div>
+				<div> Search Results: {searchResults} </div>
 			</header>
 		</div>
 	);
